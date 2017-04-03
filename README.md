@@ -40,22 +40,22 @@ James’ primary responsibilities will be:
 ## Implementation Timeline
 Day 1:
 
-Begin React Native skeleton
-Have familiarity with Instagram API and determine if we’ll need additional photo site APIs
+- Justin: Begin React Native skeleton
+- James: Gain familiarity with Instagram API and determine if we’ll need additional photo site APIs
 
 Day 2:
 
-Finish React Native skeleton
-Have a handle on Google Maps API and how we can integrate it with Instagram API
+- Justin: Finish React Native skeleton
+- James: Get a handle on Google Maps API and how we can integrate it with Instagram API
 
 Day 3 and Day 4:
 
-User has a current location
-Display photos from near current location
-Create Live demo webpage
+- Justin: Ensure that the user has a current location
+- Justin: Create the Live Demo webpage
+- James: Ensure that photos display from near current location
 
 Day 5 and Day 6:
 
-Photo locations can be displayed on a map
-React Native App styled
-Create app-emulator web page
+- Justin: Style React Native App
+- James: Ensure photo locations can be displayed on a map
+- James: Create app-emulator web page
