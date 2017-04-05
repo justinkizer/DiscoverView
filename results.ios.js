@@ -38,31 +38,6 @@ export default class Results extends React.Component {
     this.fetchData(newProps.coordinates.latitude, newProps.coordinates.longitude);
   }
 
-
-  photoUrls(){
-    if (this.state.data){
-      const array = this.state.data;
-      let urls = [];
-      array.forEach(function(photo){
-        urls.push(photo.images.standard_resolution.url);
-      });
-      return urls;
-    } else {
-      return [];
-    }
-  }
-
-  photosArray(){
-    const urls = this.photoUrls();
-    const collection = urls.map(url => (
-      <ResultsItem key={url} url={url} />
-    ));
-    return collection;
-  }
-
-
-
-
   render() {
     if (!this.state.loaded) {
       return this.renderLoadingView();
@@ -72,14 +47,15 @@ export default class Results extends React.Component {
       <ListView
         dataSource={this.state.dataSource}
         renderRow={this.renderPhoto}
-        style={styles.listview}
+        style={styles.listView}
+        contentContainerStyle={styles.list}
         />
     );
   }
 
   renderLoadingView(){
     return (
-      <View style={styles.container}>
+      <View style={styles.photobox}>
         <Text style={styles.text}>
           Loading photos...
         </Text>
@@ -89,7 +65,7 @@ export default class Results extends React.Component {
 
   renderPhoto(photo){
     return (
-      <View style={styles.container}>
+      <View style={styles.photobox}>
         <Image
           source={{uri: photo.images.standard_resolution.url}}
           style={styles.photo}
@@ -100,26 +76,33 @@ export default class Results extends React.Component {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    flexDirection: "column",
+  photobox: {
+    width: 100,
+    height: 100,
+    alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: '#fafafa',
-    padding: 10,
+    margin: 3,
   },
-  listview: {
+  list: {
+    flex: 1,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+  },
+  listView: {
     marginTop: 20,
     marginBottom: 50,
     borderTopColor: 'rgba(0,0,0,.09)',
     borderTopWidth: 2,
-    backgroundColor: '#FFF',
+    backgroundColor: '#fafafa',
   },
   text: {
     marginTop: 100
   },
   photo: {
-    width: 250,
-    height: 250,
+    width: 100,
+    height: 100,
     borderColor: 'rgba(0,0,0,.09)',
     borderWidth: 1,
     borderRadius: 3,
