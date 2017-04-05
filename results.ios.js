@@ -4,7 +4,9 @@ import ResultsItem from './results_item.ios.js';
 import {
   StyleSheet,
   View,
-  Image
+  Image,
+  Text,
+  ListView
 } from 'react-native';
 
 export default class Results extends React.Component {
@@ -14,15 +16,16 @@ export default class Results extends React.Component {
   }
 
 
-  componentDidMount(){
+  componentWillMount(){
     fetch(`https://api.instagram.com/v1/media/search?lat=${this.state.lat}&lng=${this.state.lng}&distance=${this.state.dist}&access_token=${this.state.accessToken}`,
-        {method: "GET", dataType: "jsonP"}).then(data => this.setState({data: data}));
+        {method: "GET", dataType: 'json'}).then(function(response){ return response.json();})
+          .then(json => this.setState({data: json.data}));
   }
 
 
   photoUrls(){
     if (this.state.data){
-      const array = this.state.data.data;
+      const array = this.state.data;
       let urls = [];
       array.forEach(function(photo){
         urls.push(photo.images.standard_resolution.url);
@@ -43,10 +46,12 @@ export default class Results extends React.Component {
 
 
 
+
   render() {
-    console.log(this.state);
+    console.log(this.photoUrls()[0]);
     return (
       <View style={styles.resultsContainer}>
+          {this.photosArray()}
       </View>
     );
   }
@@ -63,5 +68,10 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
     zIndex: -1
+  },
+  image: {
+    width: 250,
+    height: 250
+
   }
 });

@@ -1,6 +1,12 @@
 import React from 'react';
+import {
+  StyleSheet,
+  View,
+  Image,
+  Text
+} from 'react-native';
 
-class ResultsItem extends React.Component{
+export default class ResultsItem extends React.Component{
   constructor(props){
     super(props);
   }
@@ -8,11 +14,27 @@ class ResultsItem extends React.Component{
 
   render(){
     return (
-      <div>
-        <img src={this.props.url} />
-      </div>
+      <View scrollable={true} scroll={true}>
+        <Image style={styles.image} source={{uri: this.props.url}} />
+      </View>
     );
   }
 }
 
-export default ResultsItem;
+const styles = StyleSheet.create({
+  resultsContainer: {
+    flex: 1,
+    alignItems: "center",
+    flexDirection: "column",
+    backgroundColor: 'transparent'
+  },
+  resultsBackground: {
+    flex: 1,
+    flexDirection: "column",
+    zIndex: -1
+  },
+  image: {
+    width: 250,
+    height: 250
+  }
+});
