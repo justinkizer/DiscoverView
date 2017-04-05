@@ -1,14 +1,5 @@
 import React from 'react';
-import {
-  AppRegistry,
-  StyleSheet,
-  Text,
-  View,
-  Button,
-  Image,
-  TabBarIOS,
-  TabbarIcon
-} from 'react-native';
+import { AppRegistry, TabBarIOS } from 'react-native';
 import Home from './home.ios.js';
 import Map from './map.ios.js';
 import Results from './results.ios.js';
@@ -16,8 +7,11 @@ import Results from './results.ios.js';
 export default class DiscoverView extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {selectedTabButton: "home"};
+    this.state = {selectedTabButton: "home",
+      coordinates: {latitude: 37.78825, longitude: -122.4324}};
+    this.update = this.setState.bind(this);
   }
+
   render() {
     return (
       <TabBarIOS selectedTab={this.state.selectedTabButton}>
@@ -27,11 +21,11 @@ export default class DiscoverView extends React.Component {
           onPress={() => this.setState({selectedTabButton: "map"})}
           selected={this.state.selectedTabButton === 'map'}
         >
-          <Map />
+          <Map returnCoords={this.update} />
         </TabBarIOS.Item>
 
         <TabBarIOS.Item
-          systemIcon="history"
+          systemIcon="search"
           onPress={() => this.setState({selectedTabButton: "home"})}
           selected={this.state.selectedTabButton === 'home'}
         >
@@ -40,10 +34,11 @@ export default class DiscoverView extends React.Component {
 
         <TabBarIOS.Item
           icon={require('./assets/location.png')}
-          onPress={() => this.setState({selectedTabButton: "location"})}
+          onPress={() =>
+            this.setState({selectedTabButton: "location"})}
           selected={this.state.selectedTabButton === 'location'}
         >
-          <Results/>
+          <Results coordinates={this.state.coordinates}/>
         </TabBarIOS.Item>
 
       </TabBarIOS>

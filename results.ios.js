@@ -2,7 +2,8 @@ import React from 'react';
 import {
   StyleSheet,
   View,
-  Image
+  Image,
+  Text
 } from 'react-native';
 
 export default class Map extends React.Component {
@@ -12,7 +13,11 @@ export default class Map extends React.Component {
         <Image
           style={styles.resultsBackground}
           source={require('./assets/photoResultsBackground.png')}
-        ></Image>
+        >
+          <Text style={styles.coords}>
+            {JSON.stringify(this.props.coordinates)}
+          </Text>
+        </Image>
       </View>
     );
   }
@@ -29,5 +34,14 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
     zIndex: -1
+  },
+  coords: {
+    fontFamily: "Helvetica-Bold",
+    textShadowOffset: {width: 1, height: 1},
+    textShadowRadius: 2,
+    fontSize: 20,
+    color: "white",
+    top: "50%",
+    zIndex: 2
   }
 });
