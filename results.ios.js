@@ -27,7 +27,8 @@ export default class Results extends React.Component {
         .then((response) => response.json())
         .then((responseData) => {
           this.setState({
-            dataSource: this.state.dataSource.cloneWithRows(responseData.data)
+            dataSource: this.state.dataSource.cloneWithRows(responseData.data),
+            loaded: true
           });
         });
   }
@@ -99,15 +100,20 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     flexDirection: "column",
-    backgroundColor: 'transparent'
+    backgroundColor: '#fafafa',
+    padding: 10,
   },
   listView: {
     paddingTop: 20,
-    backgroundColor: '#F5FCFF'
+    backgroundColor: '#FFF'
   },
   photo: {
     width: 250,
-    height: 250
-
+    height: 250,
+    borderColor: 'rgba(0,0,0,.09)',
+    borderWidth: 1,
+    borderRadius: 3,
+    shadowColor: 'red',
+    shadowOpacity: 1
   }
 });
