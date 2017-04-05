@@ -33,13 +33,6 @@ export default class Home extends React.Component {
             ></Button>
           </View>
 
-          <View style={styles.instagramLoginButton}>
-            <Button
-              onPress={() => console.log("TEST")}
-              title={"Instagram Sign In"}
-            ></Button>
-          </View>
-
         </Image>
       </View>
     );
