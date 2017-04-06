@@ -3,11 +3,27 @@ import {
   StyleSheet,
   Text,
   View,
-  Button,
+  TouchableOpacity,
   Image
 } from 'react-native';
 
 export default class Home extends React.Component {
+  constructor(props) {
+    super(props);
+    this.shortcutToNearbyPhotos = this.shortcutToNearbyPhotos.bind(this);
+  }
+
+  shortcutToNearbyPhotos() {
+    navigator.geolocation.getCurrentPosition(position => {
+      const longitude = position.coords.longitude;
+      const latitude = position.coords.latitude;
+      this.props.shortcutToNearbyPhotos({selectedTabButton: "location",
+        coordinates: {latitude: latitude, longitude: longitude}});
+      }, error => alert(JSON.stringify(error)),
+      {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
+    );
+  }
+
   render() {
     return (
 
@@ -26,12 +42,11 @@ export default class Home extends React.Component {
             Explore what's near you!
           </Text>
 
-          <View style={styles.searchButton}>
-            <Button
-              onPress={() => console.log("TEST THIS BUTTON!")}
-              title={"Find Nearby Photos"}
-            ></Button>
-          </View>
+          <TouchableOpacity style={styles.searchButton} onPress={this.shortcutToNearbyPhotos}>
+
+              <Text style={styles.searchButtonText}>Find Nearby Photos</Text>
+
+          </TouchableOpacity>
 
         </Image>
       </View>
@@ -68,20 +83,20 @@ const styles = StyleSheet.create({
     textShadowRadius: 2
   },
   searchButton: {
-    top: "23%",
+    top: "22%",
     left: "25%",
     width: "50%",
     backgroundColor: 'white',
-    borderRadius: 300,
+    borderWidth: 6,
+    borderColor: 'white',
+    borderRadius: 30,
     zIndex: 1
   },
-  instagramLoginButton: {
-    top: "25%",
-    left: "25%",
-    width: "50%",
-    backgroundColor: 'white',
-    borderRadius: 300,
-    zIndex: 1
+  searchButtonText: {
+    fontFamily: 'Helvetica-Bold',
+    fontSize: 20,
+    textAlign: 'center',
+    color: '#157efb',
   },
   background: {
     flex: 1,
