@@ -1,5 +1,4 @@
 import React from 'react';
-import ResultsItem from './results_item.ios.js';
 import {
   StyleSheet,
   View,
@@ -112,6 +111,7 @@ export default class Results extends React.Component {
     return (
       <View style={styles.background}>
         <ListView
+          initialListSize={18}
           enableEmptySections={true}
           dataSource={this.state.dataSource}
           renderRow={this.renderPhoto}
