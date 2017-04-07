@@ -55,6 +55,7 @@ export default class Results extends React.Component {
     fetch(`https://api.instagram.com/v1/media/search?lat=${lat}&lng=${lng}&distance=${this.state.dist}&access_token=${this.state.accessToken}`)
         .then((response) => response.json())
         .then((responseData) => {
+          console.log(responseData);
           this.photoURLs = [];
           for (let i = 0; i < responseData.data.length; i++) {
             this.photoURLs.push(responseData.data[i].images.standard_resolution.url);
@@ -174,7 +175,7 @@ export default class Results extends React.Component {
           this.modalVisible(true, photo.images.standard_resolution.url)}
       >
         <Image
-          source={{uri: photo.images.standard_resolution.url}}
+          source={{uri: photo.images.thumbnail.url}}
           style={styles.photo}
         />
       </TouchableHighlight>
