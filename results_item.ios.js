@@ -11,7 +11,6 @@ export default class ResultsItem extends React.Component{
     super(props);
   }
 
-
   render(){
     return (
       <View scrollable={true} scroll={true}>
