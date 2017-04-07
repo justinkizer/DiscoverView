@@ -55,6 +55,7 @@ export default class Results extends React.Component {
     fetch(`https://api.instagram.com/v1/media/search?lat=${lat}&lng=${lng}&distance=${this.state.dist}&access_token=${this.state.accessToken}`)
         .then((response) => response.json())
         .then((responseData) => {
+          this.photoURLs = [];
           for (let i = 0; i < responseData.data.length; i++) {
             this.photoURLs.push(responseData.data[i].images.standard_resolution.url);
           }
@@ -101,8 +102,12 @@ export default class Results extends React.Component {
       return this.renderLoadingView();
     }
 
+    if (this.photoURLs.length === 0) {
+      return this.noPhotosFound();
+    }
+
     return (
-      <View style={styles.list}>
+      <View style={styles.background}>
         <ListView
           enableEmptySections={true}
           dataSource={this.state.dataSource}
@@ -143,9 +148,19 @@ export default class Results extends React.Component {
 
   renderLoadingView(){
     return (
-      <View style={styles.photobox}>
+      <View style={styles.list}>
         <Text style={styles.text}>
           Loading photos...
+        </Text>
+      </View>
+    );
+  }
+
+  noPhotosFound(){
+    return (
+      <View style={styles.list}>
+        <Text style={styles.text}>
+          No photos found near the selected location...
         </Text>
       </View>
     );
@@ -179,7 +194,11 @@ const styles = StyleSheet.create({
   list: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'center'
+    justifyContent: 'center',
+  },
+  background: {
+    backgroundColor: '#fafafa',
+    height: '100%'
   },
   listView: {
     marginTop: 20,
@@ -189,7 +208,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#fafafa'
   },
   text: {
-    marginTop: 100
+    top: "50%",
+    width: "50%",
+    fontFamily: 'Helvetica-light',
+    fontSize: 16,
+    textAlign: 'center',
+    color: 'gray'
   },
   photo: {
     width: 100,
