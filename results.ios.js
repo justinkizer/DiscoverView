@@ -52,15 +52,13 @@ export default class Results extends React.Component {
   }
 
   fetchData(lat, lng){
-    fetch(`https://api.instagram.com/v1/media/search?lat=${lat}&lng=${lng}&distance=${this.state.dist}&count=100&access_token=${this.state.accessToken}`)
+    fetch(`https://api.instagram.com/v1/media/search?lat=${lat}&lng=${lng}&distance=${this.state.dist}&access_token=${this.state.accessToken}`)
         .then((response) => response.json())
         .then((responseData) => {
-          console.log(responseData);
           this.photoURLs = [];
           for (let i = 0; i < responseData.data.length; i++) {
             this.photoURLs.push(responseData.data[i].images.standard_resolution.url);
           }
-          console.log(responseData);
           this.setState({
             dataSource: this.state.dataSource.cloneWithRows(responseData.data),
             loaded: true
@@ -98,7 +96,6 @@ export default class Results extends React.Component {
       this.setState({selectedPhoto: this.photoURLs[this.index]});
     }
   }
-
 
   render() {
     if (!this.state.loaded) {
