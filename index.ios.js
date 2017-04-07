@@ -25,11 +25,11 @@ export default class DiscoverView extends React.Component {
         </TabBarIOS.Item>
 
         <TabBarIOS.Item
-          systemIcon="search"
+          icon={require('./assets/home.png')}
           onPress={() => this.setState({selectedTabButton: "home"})}
           selected={this.state.selectedTabButton === 'home'}
         >
-          <Home />
+          <Home shortcutToNearbyPhotos={this.update} />
         </TabBarIOS.Item>
 
         <TabBarIOS.Item
