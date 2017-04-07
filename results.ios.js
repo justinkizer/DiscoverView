@@ -1,15 +1,15 @@
 import React from 'react';
 import ResultsItem from './results_item.ios.js';
-
 import {
   StyleSheet,
   View,
   Image,
   Text,
   ListView,
-  TouchableOpacity,
+  TouchableHighlight,
   Modal,
-  Dimensions
+  Dimensions,
+  PanResponder
 } from 'react-native';
 
 export default class Results extends React.Component {
@@ -27,6 +27,23 @@ export default class Results extends React.Component {
       selectedPhoto: null
     };
     this.renderPhoto = this.renderPhoto.bind(this);
+    this.photoURLs = [];
+  }
+
+  componentWillMount() {
+    this._panResponder = PanResponder.create({
+      onMoveShouldSetResponderCapture: () => true,
+      onMoveShouldSetPanResponderCapture: () => true,
+      onPanResponderRelease: (e, gestureState) => {
+        if (gestureState.dx > 20) {
+          this.previousPhoto();
+        } else if (gestureState.dx < -20) {
+          this.nextPhoto();
+        } else {
+          this.modalVisible(false);
+        }
+      }
+    });
   }
 
   componentDidMount(){
@@ -38,7 +55,9 @@ export default class Results extends React.Component {
     fetch(`https://api.instagram.com/v1/media/search?lat=${lat}&lng=${lng}&distance=${this.state.dist}&access_token=${this.state.accessToken}`)
         .then((response) => response.json())
         .then((responseData) => {
-          console.log(responseData);
+          for (let i = 0; i < responseData.data.length; i++) {
+            this.photoURLs.push(responseData.data[i].images.standard_resolution.url);
+          }
           this.setState({
             dataSource: this.state.dataSource.cloneWithRows(responseData.data),
             loaded: true
@@ -54,6 +73,27 @@ export default class Results extends React.Component {
 
   modalVisible(visible, url) {
     this.setState({modalVisible: visible, selectedPhoto: url});
+    this.index = this.photoURLs.indexOf(url);
+  }
+
+  nextPhoto() {
+    if (this.index + 1 > this.photoURLs.length - 1) {
+      this.index = 0;
+      this.setState({selectedPhoto: this.photoURLs[this.index]});
+    } else {
+      this.index += 1;
+      this.setState({selectedPhoto: this.photoURLs[this.index]});
+    }
+  }
+
+  previousPhoto() {
+    if (this.index - 1 < 0) {
+      this.index = this.photoURLs.length - 1;
+      this.setState({selectedPhoto: this.photoURLs[this.index]});
+    } else {
+      this.index -= 1;
+      this.setState({selectedPhoto: this.photoURLs[this.index]});
+    }
   }
 
   render() {
@@ -79,9 +119,11 @@ export default class Results extends React.Component {
           onOrientationChange={evt =>
             this.setState({currentOrientation: evt.nativeEvent.orientation})}
         >
-          <TouchableOpacity
+          <View {...this._panResponder.panHandlers}>
+          <TouchableHighlight
             onPress={() => this.modalVisible(false)}
             style={styles.container}
+
           >
             <View
               style={styles.innerContainer}>
@@ -92,7 +134,8 @@ export default class Results extends React.Component {
               />
 
             </View>
-          </TouchableOpacity>
+          </TouchableHighlight>
+          </View>
         </Modal>
     </View>
     );
@@ -110,7 +153,7 @@ export default class Results extends React.Component {
 
   renderPhoto(photo){
     return (
-      <TouchableOpacity
+      <TouchableHighlight
         style={styles.photobox}
         onPress={() =>
           this.modalVisible(true, photo.images.standard_resolution.url)}
@@ -119,7 +162,7 @@ export default class Results extends React.Component {
           source={{uri: photo.images.standard_resolution.url}}
           style={styles.photo}
         />
-      </TouchableOpacity>
+      </TouchableHighlight>
     );
   }
 }
