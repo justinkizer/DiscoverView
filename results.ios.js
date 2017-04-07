@@ -51,7 +51,7 @@ export default class Results extends React.Component {
   }
 
   fetchData(lat, lng){
-    fetch(`https://api.instagram.com/v1/media/search?lat=${lat}&lng=${lng}&distance=${this.state.dist}&access_token=${this.state.accessToken}`)
+    fetch(`https://api.instagram.com/v1/media/search?lat=${lat}&lng=${lng}&distance=${this.state.dist}&count=100&access_token=${this.state.accessToken}`)
         .then((response) => response.json())
         .then((responseData) => {
           this.photoURLs = [];
