@@ -6,6 +6,7 @@ import {
   Text,
   ListView,
   TouchableHighlight,
+  TouchableOpacity,
   Modal,
   Dimensions,
   PanResponder
@@ -21,11 +22,12 @@ export default class Results extends React.Component {
       accessToken: '4991830679.e029fea.784582c3f64a46088b0b1f124469dd3d',
       dist: 500,
       modalVisible: false,
-      selectedSupportedOrientation: 0,
       currentOrientation: 'unknown',
-      selectedPhoto: null
+      selectedPhoto: null,
+      selectedPhotoCoords: {latitude: null, longitude: null}
     };
     this.renderPhoto = this.renderPhoto.bind(this);
+    this.goToMap = this.goToMap.bind(this);
     this.photoURLs = [];
   }
 
@@ -56,7 +58,8 @@ export default class Results extends React.Component {
         .then((responseData) => {
           this.photoURLs = [];
           for (let i = 0; i < responseData.data.length; i++) {
-            this.photoURLs.push(responseData.data[i].images.standard_resolution.url);
+            this.photoURLs.push({url: responseData.data[i]
+              .images.standard_resolution.url, latitude: responseData.data[i].location.latitude, longitude: responseData.data[i].location.longitude});
           }
           this.setState({
             dataSource: this.state.dataSource.cloneWithRows(responseData.data),
@@ -72,28 +75,44 @@ export default class Results extends React.Component {
   }
 
   modalVisible(visible, url) {
-    this.setState({modalVisible: visible, selectedPhoto: url});
-    this.index = this.photoURLs.indexOf(url);
+    if (visible) {
+      this.index = this.photoURLs.map(photo => photo.url).indexOf(url);
+      this.setState({modalVisible: visible, selectedPhoto: url, selectedPhotoCoords: {latitude: this.photoURLs[this.index].latitude, longitude: this.photoURLs[this.index].longitude}});
+    } else {
+      this.setState({modalVisible: visible});
+    }
   }
 
   nextPhoto() {
     if (this.index + 1 > this.photoURLs.length - 1) {
       this.index = 0;
-      this.setState({selectedPhoto: this.photoURLs[this.index]});
+      this.setState({selectedPhoto: this.photoURLs[this.index].url, selectedPhotoCoords: {latitude: this.photoURLs[this.index].latitude, longitude: this.photoURLs[this.index].longitude}});
     } else {
       this.index += 1;
-      this.setState({selectedPhoto: this.photoURLs[this.index]});
+      this.setState({selectedPhoto: this.photoURLs[this.index].url, selectedPhotoCoords: {latitude: this.photoURLs[this.index].latitude, longitude: this.photoURLs[this.index].longitude}});
     }
   }
 
   previousPhoto() {
     if (this.index - 1 < 0) {
       this.index = this.photoURLs.length - 1;
-      this.setState({selectedPhoto: this.photoURLs[this.index]});
+      this.setState({selectedPhoto: this.photoURLs[this.index].url, selectedPhotoCoords: {latitude: this.photoURLs[this.index].latitude, longitude: this.photoURLs[this.index].longitude}});
     } else {
       this.index -= 1;
-      this.setState({selectedPhoto: this.photoURLs[this.index]});
+      this.setState({selectedPhoto: this.photoURLs[this.index].url, selectedPhotoCoords: {latitude: this.photoURLs[this.index].latitude, longitude: this.photoURLs[this.index].longitude}});
     }
+  }
+
+  goToMap() {
+    this.props.goToMap({
+      selectedTabButton: "map",
+      coordinates: {
+        latitude: this.state.selectedPhotoCoords.latitude,
+        longitude: this.state.selectedPhotoCoords.longitude
+      },
+      userDroppedPin: false
+    });
+    this.modalVisible(false);
   }
 
   render() {
@@ -104,6 +123,9 @@ export default class Results extends React.Component {
     if (this.photoURLs.length === 0) {
       return this.noPhotosFound();
     }
+
+    let showOnMapButtonLocation = this.state.currentOrientation === 'portrait'
+      ? styles.showOnMapButtonPortrait : styles.showOnMapButtonLandscape;
 
     return (
       <View style={styles.background}>
@@ -136,8 +158,17 @@ export default class Results extends React.Component {
               <Image
                 style={styles.photoFull}
                 source={{uri: this.state.selectedPhoto}}
-              />
+              >
+                <TouchableOpacity
+                  style={showOnMapButtonLocation}
+                  onPress={this.goToMap}
+                >
+                  <Text style={styles.showOnMapText}>
+                    Show on Map
+                  </Text>
+                </TouchableOpacity>
 
+              </Image>
             </View>
           </TouchableHighlight>
           </View>
@@ -208,8 +239,22 @@ const styles = StyleSheet.create({
     backgroundColor: '#fafafa'
   },
   text: {
-    top: "50%",
-    width: "50%",
+    top: '50%',
+    width: '50%',
+    fontFamily: 'Helvetica-light',
+    fontSize: 16,
+    textAlign: 'center',
+    color: 'gray'
+  },
+  showOnMapButtonPortrait: {
+    top: '79%',
+    left: '35%'
+  },
+  showOnMapButtonLandscape: {
+    top: '94%',
+    left: '36%'
+  },
+  showOnMapText: {
     fontFamily: 'Helvetica-light',
     fontSize: 16,
     textAlign: 'center',
