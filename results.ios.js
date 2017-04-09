@@ -21,8 +21,10 @@ export default class Results extends React.Component {
       loaded: false,
       accessToken: '4991830679.e029fea.784582c3f64a46088b0b1f124469dd3d',
       dist: 500,
+      latitude: null,
+      longitude: null,
       modalVisible: false,
-      currentOrientation: 'unknown',
+      currentOrientation: Dimensions.get('window').width > Dimensions.get('window').height ? 'landscape' : 'portrait',
       selectedPhoto: null,
       selectedPhotoCoords: {latitude: null, longitude: null}
     };
@@ -48,6 +50,7 @@ export default class Results extends React.Component {
   }
 
   componentDidMount(){
+    this.setState({latitude: this.props.coordinates.latitude, longitude: this.props.coordinates.longitude});
     this.fetchData(this.props.coordinates.latitude,
       this.props.coordinates.longitude);
   }
@@ -58,8 +61,12 @@ export default class Results extends React.Component {
         .then((responseData) => {
           this.photoURLs = [];
           for (let i = 0; i < responseData.data.length; i++) {
+            if (responseData.data[i].location.latitude && responseData.data[i].location.longitude) {
             this.photoURLs.push({url: responseData.data[i]
               .images.standard_resolution.url, latitude: responseData.data[i].location.latitude, longitude: responseData.data[i].location.longitude});
+            } else {
+              delete responseData.data[i];
+            }
           }
           this.setState({
             dataSource: this.state.dataSource.cloneWithRows(responseData.data),
@@ -69,9 +76,11 @@ export default class Results extends React.Component {
   }
 
   componentWillReceiveProps(newProps){
-    this.setState({loaded: false});
-    this.fetchData(newProps.coordinates.latitude,
-      newProps.coordinates.longitude);
+    if (newProps.userDroppedPin && newProps.coordinates.latitude !== this.state.latitude && newProps.coordinates.longitude !== this.state.longitude) {
+      this.setState({loaded: false, latitude: newProps.coordinates.latitude, longitude: newProps.coordinates.longitude});
+      this.fetchData(newProps.coordinates.latitude,
+        newProps.coordinates.longitude);
+    }
   }
 
   modalVisible(visible, url) {
@@ -127,8 +136,14 @@ export default class Results extends React.Component {
     let showOnMapButtonLocation = this.state.currentOrientation === 'portrait'
       ? styles.showOnMapButtonPortrait : styles.showOnMapButtonLandscape;
 
+    let photoFullLocation = this.state.currentOrientation === 'portrait'
+      ? styles.photoFullPortrait : styles.photoFullLandscape;
+
+    let textLocation = this.state.currentOrientation === 'portrait'
+      ? styles.textPortrait : styles.textLandscape;
+
     return (
-      <View style={styles.background}>
+      <View style={styles.background} onLayout={() => this.setState({currentOrientation: Dimensions.get('window').width > Dimensions.get('window').height ? 'landscape' : 'portrait'})}>
         <ListView
           initialListSize={18}
           enableEmptySections={true}
@@ -146,41 +161,45 @@ export default class Results extends React.Component {
           onOrientationChange={evt =>
             this.setState({currentOrientation: evt.nativeEvent.orientation})}
         >
-          <View {...this._panResponder.panHandlers}>
-          <TouchableHighlight
-            onPress={() => this.modalVisible(false)}
-            style={styles.container}
+          <View>
+            <TouchableOpacity
+              style={showOnMapButtonLocation}
+              onPress={this.goToMap}
+            >
+              <Text style={styles.showOnMapText}>
+                Show on Map
+              </Text>
+            </TouchableOpacity>
+            <View {...this._panResponder.panHandlers}>
+            <TouchableHighlight
+              onPress={() => this.modalVisible(false)}
+              style={styles.container}
 
-          >
-            <View
-              style={styles.innerContainer}>
+            >
+              <View
+                style={styles.innerContainer}>
 
-              <Image
-                style={styles.photoFull}
-                source={{uri: this.state.selectedPhoto}}
-              >
-                <TouchableOpacity
-                  style={showOnMapButtonLocation}
-                  onPress={this.goToMap}
+                <Image
+                  style={photoFullLocation}
+                  source={{uri: this.state.selectedPhoto}}
                 >
-                  <Text style={styles.showOnMapText}>
-                    Show on Map
-                  </Text>
-                </TouchableOpacity>
-
-              </Image>
-            </View>
-          </TouchableHighlight>
+                </Image>
+              </View>
+            </TouchableHighlight>
           </View>
+        </View>
         </Modal>
     </View>
     );
   }
 
   renderLoadingView(){
+    let textLocation = this.state.currentOrientation === 'portrait'
+      ? styles.textPortrait : styles.textLandscape;
+
     return (
-      <View style={styles.list}>
-        <Text style={styles.text}>
+      <View style={styles.list} onLayout={() => this.setState({currentOrientation: Dimensions.get('window').width > Dimensions.get('window').height ? 'landscape' : 'portrait'})}>
+        <Text style={textLocation}>
           Loading photos...
         </Text>
       </View>
@@ -188,10 +207,13 @@ export default class Results extends React.Component {
   }
 
   noPhotosFound(){
+    let textLocation = this.state.currentOrientation === 'portrait'
+      ? styles.textPortrait : styles.textLandscape;
+
     return (
-      <View style={styles.list}>
-        <Text style={styles.text}>
-          No photos found near the selected location...
+      <View style={styles.list} onLayout={() => this.setState({currentOrientation: Dimensions.get('window').width > Dimensions.get('window').height ? 'landscape' : 'portrait'})}>
+        <Text style={textLocation}>
+          No photos found near the selected location
         </Text>
       </View>
     );
@@ -238,7 +260,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 2,
     backgroundColor: '#fafafa'
   },
-  text: {
+  textPortrait: {
     top: '50%',
     width: '50%',
     fontFamily: 'Helvetica-light',
@@ -246,13 +268,23 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: 'gray'
   },
+  textLandscape: {
+    top: '25%',
+    width: '50%',
+    fontFamily: 'Helvetica-light',
+    fontSize: 16,
+    textAlign: 'center',
+    color: 'gray'
+  },
   showOnMapButtonPortrait: {
-    top: '79%',
-    left: '35%'
+    top: '81%',
+    left: '35%',
+    zIndex: 1
   },
   showOnMapButtonLandscape: {
-    top: '94%',
-    left: '36%'
+    top: '89%',
+    left: '38%',
+    zIndex: 1
   },
   showOnMapText: {
     fontFamily: 'Helvetica-light',
@@ -270,9 +302,15 @@ const styles = StyleSheet.create({
     shadowOpacity: 1,
     paddingBottom: 10
   },
-  photoFull: {
+  photoFullPortrait: {
     width: '100%',
     height: '100%',
+    resizeMode: 'contain'
+  },
+  photoFullLandscape: {
+    width: '100%',
+    height: '100%',
+    top: '-5%',
     resizeMode: 'contain'
   },
   container: {

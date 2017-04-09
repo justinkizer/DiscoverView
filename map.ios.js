@@ -3,7 +3,8 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
-  View
+  View,
+  Dimensions
 } from 'react-native';
 import MapView from 'react-native-maps';
 
@@ -16,13 +17,17 @@ export default class Map extends React.Component {
       userLatitude: this.props.coordinates.latitude,
       userLongitude: this.props.coordinates.latitude,
       followingLocation: false,
-      currentOrientation: 'unknown'
+      currentOrientation: Dimensions.get('window').width < Dimensions.get('window').height ? 'landscape' : 'portrait'
     };
     this.changeLocationButtonStyle = this.changeLocationButtonStyle.bind(this);
   }
 
   componentWillMount() {
-    this.getUserCurrentLocation();
+    if (this.props.userDroppedPin !== null) {
+      this.componentWillReceiveProps(this.props);
+    } else {
+      this.getUserCurrentLocation();
+    }
   }
 
   componentWillReceiveProps(newProps) {

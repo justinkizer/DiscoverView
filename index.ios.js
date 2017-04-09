@@ -8,7 +8,7 @@ export default class DiscoverView extends React.Component {
   constructor(props) {
     super(props);
     this.state = {selectedTabButton: "home",
-      coordinates: {latitude: 37.78825, longitude: -122.4324}, userDroppedPin: false};
+      coordinates: {latitude: 37.819924, longitude: -122.478490}, userDroppedPin: null};
     this.update = this.setState.bind(this);
   }
 
@@ -38,7 +38,7 @@ export default class DiscoverView extends React.Component {
             this.setState({selectedTabButton: "location"})}
           selected={this.state.selectedTabButton === 'location'}
         >
-          <Results goToMap={this.update} coordinates={this.state.coordinates}/>
+          <Results goToMap={this.update} userDroppedPin={this.state.userDroppedPin} coordinates={this.state.coordinates}/>
         </TabBarIOS.Item>
 
       </TabBarIOS>

@@ -4,33 +4,35 @@ import {
   Text,
   View,
   TouchableOpacity,
-  Image
+  Image,
+  Dimensions
 } from 'react-native';
 
 export default class Home extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {currentOrientation: 'unknown'};
-    this.shortcutToNearbyPhotos = this.shortcutToNearbyPhotos.bind(this);
-    this.changeBackground = this.changeBackground.bind(this);
+    this.state = {currentOrientation: Dimensions.get('window').width < Dimensions.get('window').height ? 'landscape' : 'portrait'};
+    this.changeOrientation = this.changeOrientation.bind(this);
   }
 
   shortcutToNearbyPhotos() {
     navigator.geolocation.getCurrentPosition(position => {
       const longitude = position.coords.longitude;
       const latitude = position.coords.latitude;
-      this.props.shortcutToNearbyPhotos({selectedTabButton: 'location',
+      this.props.shortcutToNearbyPhotos({selectedTabButton: 'location', userDroppedPin: true,
         coordinates: {latitude: latitude, longitude: longitude}});
       }, error => alert(JSON.stringify(error)),
       {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
     );
   }
 
-  changeBackground() {
+  changeOrientation() {
     if (this.state.currentOrientation === 'portrait') {
+      this.searchButtonStyle = styles.searchButtonLandscape;
       this.backgroundImage = require('./assets/landscapeBackground.png');
       this.setState({currentOrientation: 'landscape'});
     } else {
+      this.searchButtonStyle = styles.searchButtonPortrait;
       this.backgroundImage = require('./assets/background.png');
       this.setState({currentOrientation: 'portrait'});
     }
@@ -39,7 +41,7 @@ export default class Home extends React.Component {
   render() {
     return (
 
-      <View style={styles.homeContainer} onLayout={this.changeBackground}>
+      <View style={styles.homeContainer} onLayout={this.changeOrientation}>
 
         <Image
           style={styles.background}
@@ -55,8 +57,8 @@ export default class Home extends React.Component {
           </Text>
 
           <TouchableOpacity
-            style={styles.searchButton}
-            onPress={this.shortcutToNearbyPhotos}
+            style={this.searchButtonStyle}
+            onPress={() => this.shortcutToNearbyPhotos()}
           >
               <Text style={styles.searchButtonText}>Find Nearby Photos</Text>
           </TouchableOpacity>
@@ -95,10 +97,20 @@ const styles = StyleSheet.create({
     textShadowOffset: {width: 1, height: 1},
     textShadowRadius: 2
   },
-  searchButton: {
+  searchButtonPortrait: {
     top: '22%',
     left: '22%',
     width: '57%',
+    backgroundColor: 'white',
+    borderWidth: 6,
+    borderColor: 'white',
+    borderRadius: 30,
+    zIndex: 1
+  },
+  searchButtonLandscape: {
+    top: '22%',
+    left: '34%',
+    width: '32%',
     backgroundColor: 'white',
     borderWidth: 6,
     borderColor: 'white',
