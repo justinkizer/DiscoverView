@@ -12,7 +12,8 @@ import {
   PanResponder,
   CameraRoll,
   ActionSheetIOS,
-  Alert
+  Alert,
+  Linking
 } from 'react-native';
 
 export default class Results extends React.Component {
@@ -30,7 +31,8 @@ export default class Results extends React.Component {
       currentOrientation: Dimensions.get('window').width >
         Dimensions.get('window').height ? 'landscape' : 'portrait',
       selectedPhoto: null,
-      selectedPhotoCoords: {latitude: null, longitude: null}
+      selectedPhotoCoords: {latitude: null, longitude: null},
+      selectedPhotoPage: null,
     };
     this.renderPhoto = this.renderPhoto.bind(this);
     this.goToMap = this.goToMap.bind(this);
@@ -74,12 +76,13 @@ export default class Results extends React.Component {
             .then((responseData) => {
               this.photoURLs = [];
               for (let i = 0; i < responseData.data.length; i++) {
-                if (responseData.data[i].location.latitude &&
-                  responseData.data[i].location.longitude) {
-                    this.photoURLs.push({url: responseData.data[i]
-                      .images.standard_resolution.url,
-                      latitude: responseData.data[i].location.latitude,
-                      longitude: responseData.data[i].location.longitude
+                let photo = responseData.data[i];
+                if (photo.location.latitude && photo.location.longitude) {
+                    this.photoURLs.push({
+                      url: photo.images.standard_resolution.url,
+                      latitude: photo.location.latitude,
+                      longitude: photo.location.longitude,
+                      photoPage: photo.link
                     });
                 } else {
                   delete responseData.data[i];
@@ -116,7 +119,8 @@ export default class Results extends React.Component {
         selectedPhotoCoords: {
           latitude: this.photoURLs[this.index].latitude,
           longitude: this.photoURLs[this.index].longitude
-        }
+        },
+        selectedPhotoPage: this.photoURLs[this.index].photoPage
       });
     } else {
       this.setState({modalVisible: visible});
@@ -131,7 +135,8 @@ export default class Results extends React.Component {
         selectedPhotoCoords: {
           latitude: this.photoURLs[this.index].latitude,
           longitude: this.photoURLs[this.index].longitude
-        }
+        },
+        selectedPhotoPage: this.photoURLs[this.index].photoPage
       });
     } else {
       this.index += 1;
@@ -140,7 +145,8 @@ export default class Results extends React.Component {
         selectedPhotoCoords: {
           latitude: this.photoURLs[this.index].latitude,
           longitude: this.photoURLs[this.index].longitude
-        }
+        },
+        selectedPhotoPage: this.photoURLs[this.index].photoPage
       });
     }
   }
@@ -153,7 +159,8 @@ export default class Results extends React.Component {
         selectedPhotoCoords: {
           latitude: this.photoURLs[this.index].latitude,
           longitude: this.photoURLs[this.index].longitude
-        }
+        },
+        selectedPhotoPage: this.photoURLs[this.index].photoPage
       });
     } else {
       this.index -= 1;
@@ -162,7 +169,8 @@ export default class Results extends React.Component {
         selectedPhotoCoords: {
           latitude: this.photoURLs[this.index].latitude,
           longitude: this.photoURLs[this.index].longitude
-        }
+        },
+        selectedPhotoPage: this.photoURLs[this.index].photoPage
       });
     }
   }
@@ -182,17 +190,20 @@ export default class Results extends React.Component {
   savePhoto() {
     ActionSheetIOS.showActionSheetWithOptions({
       options: [
+        'View on Instagram',
         'Save to Camera Roll',
         'Show on Map',
         'Cancel'
       ],
-      cancelButtonIndex: 2
+      cancelButtonIndex: 3
     },
     (buttonPressed) => {
       if (buttonPressed === 0) {
-        CameraRoll.saveToCameraRoll(this.state.selectedPhoto)
-          .then(Alert.alert('Success', 'Photo saved to Camera Roll'));
+        Linking.openURL(this.state.selectedPhotoPage);
       } else if (buttonPressed === 1) {
+        CameraRoll.saveToCameraRoll(this.state.selectedPhoto)
+        .then(Alert.alert('Success', 'Photo saved to Camera Roll'));
+      } else if (buttonPressed === 2) {
         this.goToMap();
       }
     });
