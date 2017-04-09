@@ -9,7 +9,10 @@ import {
   TouchableOpacity,
   Modal,
   Dimensions,
-  PanResponder
+  PanResponder,
+  CameraRoll,
+  ActionSheetIOS,
+  Alert
 } from 'react-native';
 
 export default class Results extends React.Component {
@@ -30,13 +33,17 @@ export default class Results extends React.Component {
     };
     this.renderPhoto = this.renderPhoto.bind(this);
     this.goToMap = this.goToMap.bind(this);
+    this.savePhoto = this.savePhoto.bind(this);
     this.photoURLs = [];
   }
 
   componentWillMount() {
     this._panResponder = PanResponder.create({
       onMoveShouldSetResponderCapture: () => true,
-      onMoveShouldSetPanResponderCapture: () => true,
+      // onMoveShouldSetPanResponderCapture: () => true,
+      onMoveShouldSetPanResponderCapture: (evt, gestureState) => {
+        return Math.abs(gestureState.dx) > 5;
+      },
       onPanResponderRelease: (e, gestureState) => {
         if (gestureState.dx > 20) {
           this.previousPhoto();
@@ -124,6 +131,25 @@ export default class Results extends React.Component {
     this.modalVisible(false);
   }
 
+  savePhoto() {
+    ActionSheetIOS.showActionSheetWithOptions({
+      options: [
+        'Save to Camera Roll',
+        'Show on Map',
+        'Cancel'
+      ],
+      cancelButtonIndex: 2
+    },
+    (buttonIndex) => {
+      if (buttonIndex === 0) {
+        CameraRoll.saveToCameraRoll(this.state.selectedPhoto)
+        .then(Alert.alert('Success', 'Photo saved to your Camera Roll'));
+
+      } else if (buttonIndex === 1) {
+        this.goToMap();
+      } });
+  }
+
   render() {
     if (!this.state.loaded) {
       return this.renderLoadingView();
@@ -173,8 +199,9 @@ export default class Results extends React.Component {
             <View {...this._panResponder.panHandlers}>
             <TouchableHighlight
               onPress={() => this.modalVisible(false)}
+              onLongPress={this.savePhoto}
               style={styles.container}
-
+              underlayColor='rgba(255,255,255,0.9)'
             >
               <View
                 style={styles.innerContainer}>
