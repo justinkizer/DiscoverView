@@ -7,8 +7,14 @@ import Results from './results.ios.js';
 export default class DiscoverView extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {selectedTabButton: "home",
-      coordinates: {latitude: 37.819924, longitude: -122.478490}, userDroppedPin: null};
+    this.state = {
+      selectedTabButton: 'home',
+      coordinates: {
+        latitude: 37.805884,
+        longitude: -122.422869
+      },
+      userDroppedPin: null
+    };
     this.update = this.setState.bind(this);
   }
 
@@ -18,15 +24,18 @@ export default class DiscoverView extends React.Component {
 
         <TabBarIOS.Item
           icon={require('./assets/map.png')}
-          onPress={() => this.setState({selectedTabButton: "map"})}
+          onPress={() => this.setState({selectedTabButton: 'map'})}
           selected={this.state.selectedTabButton === 'map'}
         >
-          <Map returnCoords={this.update} userDroppedPin={this.state.userDroppedPin} coordinates={this.state.coordinates} />
+          <Map returnCoords={this.update}
+            userDroppedPin={this.state.userDroppedPin}
+            coordinates={this.state.coordinates}
+          />
         </TabBarIOS.Item>
 
         <TabBarIOS.Item
           icon={require('./assets/home.png')}
-          onPress={() => this.setState({selectedTabButton: "home"})}
+          onPress={() => this.setState({selectedTabButton: 'home'})}
           selected={this.state.selectedTabButton === 'home'}
         >
           <Home shortcutToNearbyPhotos={this.update} />
@@ -35,10 +44,13 @@ export default class DiscoverView extends React.Component {
         <TabBarIOS.Item
           icon={require('./assets/results.png')}
           onPress={() =>
-            this.setState({selectedTabButton: "location"})}
+            this.setState({selectedTabButton: 'location'})}
           selected={this.state.selectedTabButton === 'location'}
         >
-          <Results goToMap={this.update} userDroppedPin={this.state.userDroppedPin} coordinates={this.state.coordinates}/>
+          <Results goToMap={this.update}
+            userDroppedPin={this.state.userDroppedPin}
+            coordinates={this.state.coordinates}
+          />
         </TabBarIOS.Item>
 
       </TabBarIOS>

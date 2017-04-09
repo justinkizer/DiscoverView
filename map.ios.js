@@ -16,10 +16,11 @@ export default class Map extends React.Component {
       longitude: this.props.coordinates.longitude,
       userLatitude: this.props.coordinates.latitude,
       userLongitude: this.props.coordinates.latitude,
-      followingLocation: false,
-      currentOrientation: Dimensions.get('window').width < Dimensions.get('window').height ? 'landscape' : 'portrait'
+      followingIcon: require('./assets/locationNotFollowing.png'),
+      currentOrientation: Dimensions.get('window').width <
+        Dimensions.get('window').height ? 'landscape' : 'portrait'
     };
-    this.changeLocationButtonStyle = this.changeLocationButtonStyle.bind(this);
+    this.changeOrientation = this.changeOrientation.bind(this);
   }
 
   componentWillMount() {
@@ -63,7 +64,7 @@ export default class Map extends React.Component {
   }
 
   handleMapPress(coords) {
-    if (coords !== "locationButtonPress" && !this.locationButtonPressed) {
+    if (coords !== 'locationButtonPress' && !this.locationButtonPressed) {
       this.snapCoordinates = null;
       this.setState({latitude: coords.latitude, longitude: coords.longitude});
       this.props.returnCoords({
@@ -73,39 +74,36 @@ export default class Map extends React.Component {
         },
         userDroppedPin: true
       });
-    } else if (coords === "locationButtonPress") {
+    } else if (coords === 'locationButtonPress') {
       this.locationButtonPressed = true;
-      this.setState({followingLocation: !this.state.followingLocation});
+      this.setState({followingIcon: require('./assets/locationFollowing.png')});
       this.getUserCurrentLocation();
       setTimeout(() => {
         this.locationButtonPressed = false;
-        this.setState({followingLocation: !this.state.followingLocation});
+        this.setState({
+          followingIcon: require('./assets/locationNotFollowing.png')
+        });
         this.snapCoordinates = null;
       }, 1000);
     }
   }
 
-  changeLocationButtonStyle() {
+  changeOrientation() {
     if (this.state.currentOrientation === 'portrait') {
-      this.backgroundImage = require('./assets/landscapeBackground.png');
+      this.followingIconLocation = styles.locationButtonLandscape;
       this.setState({currentOrientation: 'landscape'});
     } else {
-      this.backgroundImage = require('./assets/background.png');
+      this.followingIconLocation = styles.locationButtonPortrait;
       this.setState({currentOrientation: 'portrait'});
     }
   }
 
   render() {
-
-    let followingIconLocation = this.state.currentOrientation === 'portrait'
-      ? styles.locationButtonPortrait : styles.locationButtonLandscape;
-
-    let followingIcon = this.state.followingLocation ?
-      require('./assets/locationFollowing.png') :
-      require('./assets/locationNotFollowing.png');
-
     return (
-      <View style={styles.mapContainer} onLayout={this.changeLocationButtonStyle}>
+      <View
+        style={styles.mapContainer}
+        onLayout={this.changeOrientation}
+      >
         <MapView
           style={styles.map}
           region={this.snapCoordinates}
@@ -113,19 +111,21 @@ export default class Map extends React.Component {
           onPress={pin => this.handleMapPress(pin.nativeEvent.coordinate)}
         >
           <MapView.Marker
-              draggable={true}
-              onDragEnd={pin => this.handleMapPress(pin.nativeEvent.coordinate)}
-              coordinate={{latitude: this.state.latitude,
-                longitude: this.state.longitude}}
-          ></MapView.Marker>
-
+            draggable={true}
+            onDragEnd={pin => this.handleMapPress(pin.nativeEvent.coordinate)}
+            coordinate={{
+              latitude: this.state.latitude,
+              longitude: this.state.longitude
+            }}
+          />
         </MapView>
 
         <TouchableOpacity
-          style={followingIconLocation}
-          onPress={() => this.handleMapPress("locationButtonPress")}
+          style={this.followingIconLocation}
+          onPress={() => this.handleMapPress('locationButtonPress')}
+          hitSlop={{top: 10, left: 10, bottom: 10, right: 10}}
         >
-          <Image source={followingIcon}/>
+          <Image source={this.state.followingIcon} />
         </TouchableOpacity>
 
       </View>

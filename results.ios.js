@@ -27,24 +27,25 @@ export default class Results extends React.Component {
       latitude: null,
       longitude: null,
       modalVisible: false,
-      currentOrientation: Dimensions.get('window').width > Dimensions.get('window').height ? 'landscape' : 'portrait',
+      currentOrientation: Dimensions.get('window').width >
+        Dimensions.get('window').height ? 'landscape' : 'portrait',
       selectedPhoto: null,
       selectedPhotoCoords: {latitude: null, longitude: null}
     };
     this.renderPhoto = this.renderPhoto.bind(this);
     this.goToMap = this.goToMap.bind(this);
     this.savePhoto = this.savePhoto.bind(this);
+    this.changeOrientation = this.changeOrientation.bind(this);
     this.photoURLs = [];
   }
 
   componentWillMount() {
-    this._panResponder = PanResponder.create({
+    this.panResponder = PanResponder.create({
       onMoveShouldSetResponderCapture: () => true,
-      // onMoveShouldSetPanResponderCapture: () => true,
-      onMoveShouldSetPanResponderCapture: (evt, gestureState) => {
+      onMoveShouldSetPanResponderCapture: (touchEvent, gestureState) => {
         return Math.abs(gestureState.dx) > 5;
       },
-      onPanResponderRelease: (e, gestureState) => {
+      onPanResponderRelease: (touchEvent, gestureState) => {
         if (gestureState.dx > 20) {
           this.previousPhoto();
         } else if (gestureState.dx < -20) {
@@ -56,44 +57,67 @@ export default class Results extends React.Component {
     });
   }
 
-  componentDidMount(){
-    this.setState({latitude: this.props.coordinates.latitude, longitude: this.props.coordinates.longitude});
+  componentDidMount() {
+    this.setState({
+      latitude: this.props.coordinates.latitude,
+      longitude: this.props.coordinates.longitude
+    });
     this.fetchData(this.props.coordinates.latitude,
       this.props.coordinates.longitude);
   }
 
-  fetchData(lat, lng){
-    fetch(`https://api.instagram.com/v1/media/search?lat=${lat}&lng=${lng}&distance=${this.state.dist}&count=100&access_token=${this.state.accessToken}`)
-        .then((response) => response.json())
-        .then((responseData) => {
-          this.photoURLs = [];
-          for (let i = 0; i < responseData.data.length; i++) {
-            if (responseData.data[i].location.latitude && responseData.data[i].location.longitude) {
-            this.photoURLs.push({url: responseData.data[i]
-              .images.standard_resolution.url, latitude: responseData.data[i].location.latitude, longitude: responseData.data[i].location.longitude});
-            } else {
-              delete responseData.data[i];
-            }
-          }
-          this.setState({
-            dataSource: this.state.dataSource.cloneWithRows(responseData.data),
-            loaded: true
-          });
-        });
+  fetchData(lat, lng) {
+    fetch(`https://api.instagram.com/v1/media/search?lat=${lat}&lng=${lng}` +
+      `&distance=${this.state.dist}&count=100&` +
+        `access_token=${this.state.accessToken}`)
+          .then((response) => response.json())
+            .then((responseData) => {
+              this.photoURLs = [];
+              for (let i = 0; i < responseData.data.length; i++) {
+                if (responseData.data[i].location.latitude &&
+                  responseData.data[i].location.longitude) {
+                    this.photoURLs.push({url: responseData.data[i]
+                      .images.standard_resolution.url,
+                      latitude: responseData.data[i].location.latitude,
+                      longitude: responseData.data[i].location.longitude
+                    });
+                } else {
+                  delete responseData.data[i];
+                }
+              }
+              this.setState({
+                dataSource:
+                  this.state.dataSource.cloneWithRows(responseData.data),
+                loaded: true
+              });
+            });
   }
 
-  componentWillReceiveProps(newProps){
-    if (newProps.userDroppedPin && newProps.coordinates.latitude !== this.state.latitude && newProps.coordinates.longitude !== this.state.longitude) {
-      this.setState({loaded: false, latitude: newProps.coordinates.latitude, longitude: newProps.coordinates.longitude});
-      this.fetchData(newProps.coordinates.latitude,
-        newProps.coordinates.longitude);
+  componentWillReceiveProps(newProps) {
+    if (newProps.userDroppedPin &&
+      newProps.coordinates.latitude !== this.state.latitude
+      && newProps.coordinates.longitude !== this.state.longitude) {
+        this.setState({
+          loaded: false,
+          latitude: newProps.coordinates.latitude,
+          longitude: newProps.coordinates.longitude
+        });
+        this.fetchData(newProps.coordinates.latitude,
+          newProps.coordinates.longitude);
     }
   }
 
   modalVisible(visible, url) {
     if (visible) {
       this.index = this.photoURLs.map(photo => photo.url).indexOf(url);
-      this.setState({modalVisible: visible, selectedPhoto: url, selectedPhotoCoords: {latitude: this.photoURLs[this.index].latitude, longitude: this.photoURLs[this.index].longitude}});
+      this.setState({
+        modalVisible: visible,
+        selectedPhoto: url,
+        selectedPhotoCoords: {
+          latitude: this.photoURLs[this.index].latitude,
+          longitude: this.photoURLs[this.index].longitude
+        }
+      });
     } else {
       this.setState({modalVisible: visible});
     }
@@ -102,26 +126,50 @@ export default class Results extends React.Component {
   nextPhoto() {
     if (this.index + 1 > this.photoURLs.length - 1) {
       this.index = 0;
-      this.setState({selectedPhoto: this.photoURLs[this.index].url, selectedPhotoCoords: {latitude: this.photoURLs[this.index].latitude, longitude: this.photoURLs[this.index].longitude}});
+      this.setState({
+        selectedPhoto: this.photoURLs[this.index].url,
+        selectedPhotoCoords: {
+          latitude: this.photoURLs[this.index].latitude,
+          longitude: this.photoURLs[this.index].longitude
+        }
+      });
     } else {
       this.index += 1;
-      this.setState({selectedPhoto: this.photoURLs[this.index].url, selectedPhotoCoords: {latitude: this.photoURLs[this.index].latitude, longitude: this.photoURLs[this.index].longitude}});
+      this.setState({
+        selectedPhoto: this.photoURLs[this.index].url,
+        selectedPhotoCoords: {
+          latitude: this.photoURLs[this.index].latitude,
+          longitude: this.photoURLs[this.index].longitude
+        }
+      });
     }
   }
 
   previousPhoto() {
     if (this.index - 1 < 0) {
       this.index = this.photoURLs.length - 1;
-      this.setState({selectedPhoto: this.photoURLs[this.index].url, selectedPhotoCoords: {latitude: this.photoURLs[this.index].latitude, longitude: this.photoURLs[this.index].longitude}});
+      this.setState({
+        selectedPhoto: this.photoURLs[this.index].url,
+        selectedPhotoCoords: {
+          latitude: this.photoURLs[this.index].latitude,
+          longitude: this.photoURLs[this.index].longitude
+        }
+      });
     } else {
       this.index -= 1;
-      this.setState({selectedPhoto: this.photoURLs[this.index].url, selectedPhotoCoords: {latitude: this.photoURLs[this.index].latitude, longitude: this.photoURLs[this.index].longitude}});
+      this.setState({
+        selectedPhoto: this.photoURLs[this.index].url,
+        selectedPhotoCoords: {
+          latitude: this.photoURLs[this.index].latitude,
+          longitude: this.photoURLs[this.index].longitude
+        }
+      });
     }
   }
 
   goToMap() {
     this.props.goToMap({
-      selectedTabButton: "map",
+      selectedTabButton: 'map',
       coordinates: {
         latitude: this.state.selectedPhotoCoords.latitude,
         longitude: this.state.selectedPhotoCoords.longitude
@@ -140,36 +188,42 @@ export default class Results extends React.Component {
       ],
       cancelButtonIndex: 2
     },
-    (buttonIndex) => {
-      if (buttonIndex === 0) {
+    (buttonPressed) => {
+      if (buttonPressed === 0) {
         CameraRoll.saveToCameraRoll(this.state.selectedPhoto)
-        .then(Alert.alert('Success', 'Photo saved to your Camera Roll'));
-
-      } else if (buttonIndex === 1) {
+          .then(Alert.alert('Success', 'Photo saved to Camera Roll'));
+      } else if (buttonPressed === 1) {
         this.goToMap();
-      } });
+      }
+    });
+  }
+
+  changeOrientation() {
+    this.setState({
+      currentOrientation: Dimensions.get('window').width >
+        Dimensions.get('window').height ? 'landscape' : 'portrait'
+    });
+    if (this.state.currentOrientation === 'portrait') {
+      this.showOnMapButtonLocation = styles.showOnMapButtonPortrait;
+      this.photoFullLocation = styles.photoFullPortrait;
+    } else {
+      this.showOnMapButtonLocation = styles.showOnMapButtonLandscape;
+      this.photoFullLocation = styles.photoFullLandscape;
+    }
   }
 
   render() {
     if (!this.state.loaded) {
       return this.renderLoadingView();
-    }
-
-    if (this.photoURLs.length === 0) {
+    } else if (this.photoURLs.length === 0) {
       return this.noPhotosFound();
     }
 
-    let showOnMapButtonLocation = this.state.currentOrientation === 'portrait'
-      ? styles.showOnMapButtonPortrait : styles.showOnMapButtonLandscape;
-
-    let photoFullLocation = this.state.currentOrientation === 'portrait'
-      ? styles.photoFullPortrait : styles.photoFullLandscape;
-
-    let textLocation = this.state.currentOrientation === 'portrait'
-      ? styles.textPortrait : styles.textLandscape;
-
     return (
-      <View style={styles.background} onLayout={() => this.setState({currentOrientation: Dimensions.get('window').width > Dimensions.get('window').height ? 'landscape' : 'portrait'})}>
+      <View
+        style={styles.background}
+        onLayout={this.changeOrientation}
+      >
         <ListView
           initialListSize={18}
           enableEmptySections={true}
@@ -184,48 +238,52 @@ export default class Results extends React.Component {
           visible={this.state.modalVisible}
           onRequestClose={() => this.modalVisible(false)}
           supportedOrientations={['portrait', 'landscape']}
-          onOrientationChange={evt =>
-            this.setState({currentOrientation: evt.nativeEvent.orientation})}
+          onOrientationChange={this.changeOrientation}
         >
           <View>
             <TouchableOpacity
-              style={showOnMapButtonLocation}
+              style={this.showOnMapButtonLocation}
               onPress={this.goToMap}
+              hitSlop={{top: 10, left: 15, bottom: 15, right: 15}}
             >
               <Text style={styles.showOnMapText}>
                 Show on Map
               </Text>
             </TouchableOpacity>
-            <View {...this._panResponder.panHandlers}>
-            <TouchableHighlight
-              onPress={() => this.modalVisible(false)}
-              onLongPress={this.savePhoto}
-              style={styles.container}
-              underlayColor='rgba(255,255,255,0.9)'
-            >
-              <View
-                style={styles.innerContainer}>
 
-                <Image
-                  style={photoFullLocation}
-                  source={{uri: this.state.selectedPhoto}}
+            <View {...this.panResponder.panHandlers}>
+              <TouchableHighlight
+                onPress={() => this.modalVisible(false)}
+                onLongPress={this.savePhoto}
+                style={styles.container}
+                underlayColor='rgba(255,255,255,0.9)'
+              >
+                <View
+                  style={styles.innerContainer}
                 >
-                </Image>
-              </View>
-            </TouchableHighlight>
+                  <Image
+                    style={this.photoFullLocation}
+                    source={{uri: this.state.selectedPhoto}}
+                  />
+                </View>
+              </TouchableHighlight>
+            </View>
+
           </View>
-        </View>
         </Modal>
-    </View>
+      </View>
     );
   }
 
-  renderLoadingView(){
+  renderLoadingView() {
     let textLocation = this.state.currentOrientation === 'portrait'
       ? styles.textPortrait : styles.textLandscape;
 
     return (
-      <View style={styles.list} onLayout={() => this.setState({currentOrientation: Dimensions.get('window').width > Dimensions.get('window').height ? 'landscape' : 'portrait'})}>
+      <View
+        style={styles.list}
+        onLayout={this.changeOrientation}
+      >
         <Text style={textLocation}>
           Loading photos...
         </Text>
@@ -233,12 +291,15 @@ export default class Results extends React.Component {
     );
   }
 
-  noPhotosFound(){
+  noPhotosFound() {
     let textLocation = this.state.currentOrientation === 'portrait'
       ? styles.textPortrait : styles.textLandscape;
 
     return (
-      <View style={styles.list} onLayout={() => this.setState({currentOrientation: Dimensions.get('window').width > Dimensions.get('window').height ? 'landscape' : 'portrait'})}>
+      <View
+        style={styles.list}
+        onLayout={this.changeOrientation}
+      >
         <Text style={textLocation}>
           No photos found near the selected location
         </Text>
@@ -246,12 +307,13 @@ export default class Results extends React.Component {
     );
   }
 
-  renderPhoto(photo){
+  renderPhoto(photo) {
     return (
       <TouchableHighlight
-        style={styles.photobox}
+        style={styles.photoBox}
         onPress={() =>
-          this.modalVisible(true, photo.images.standard_resolution.url)}
+          this.modalVisible(true, photo.images.standard_resolution.url)
+        }
       >
         <Image
           source={{uri: photo.images.thumbnail.url}}
@@ -263,7 +325,7 @@ export default class Results extends React.Component {
 }
 
 const styles = StyleSheet.create({
-  photobox: {
+  photoBox: {
     width: 100,
     height: 100,
     alignItems: 'center',
@@ -274,7 +336,7 @@ const styles = StyleSheet.create({
   list: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'center',
+    justifyContent: 'center'
   },
   background: {
     backgroundColor: '#fafafa',
@@ -305,12 +367,14 @@ const styles = StyleSheet.create({
   },
   showOnMapButtonPortrait: {
     top: '81%',
-    left: '35%',
+    left: '71.5%',
+    width: '27%',
     zIndex: 1
   },
   showOnMapButtonLandscape: {
     top: '89%',
-    left: '38%',
+    left: '75.5%',
+    width: '25%',
     zIndex: 1
   },
   showOnMapText: {
@@ -341,8 +405,8 @@ const styles = StyleSheet.create({
     resizeMode: 'contain'
   },
   container: {
-  justifyContent: 'center',
-  backgroundColor: 'rgba(255, 255, 255, 0.9)'
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)'
   },
   innerContainer: {
     borderRadius: 10,

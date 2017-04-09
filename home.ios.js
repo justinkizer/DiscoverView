@@ -11,7 +11,10 @@ import {
 export default class Home extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {currentOrientation: Dimensions.get('window').width < Dimensions.get('window').height ? 'landscape' : 'portrait'};
+    this.state = {
+      currentOrientation: Dimensions.get('window').width <
+        Dimensions.get('window').height ? 'landscape' : 'portrait'
+    };
     this.changeOrientation = this.changeOrientation.bind(this);
   }
 
@@ -19,8 +22,14 @@ export default class Home extends React.Component {
     navigator.geolocation.getCurrentPosition(position => {
       const longitude = position.coords.longitude;
       const latitude = position.coords.latitude;
-      this.props.shortcutToNearbyPhotos({selectedTabButton: 'location', userDroppedPin: true,
-        coordinates: {latitude: latitude, longitude: longitude}});
+      this.props.shortcutToNearbyPhotos({
+        selectedTabButton: 'location',
+        userDroppedPin: true,
+        coordinates: {
+          latitude: latitude,
+          longitude: longitude
+        }
+      });
       }, error => alert(JSON.stringify(error)),
       {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
     );
@@ -40,14 +49,14 @@ export default class Home extends React.Component {
 
   render() {
     return (
-
-      <View style={styles.homeContainer} onLayout={this.changeOrientation}>
-
+      <View
+        style={styles.homeContainer}
+        onLayout={this.changeOrientation}
+      >
         <Image
           style={styles.background}
           source={this.backgroundImage}
         >
-
           <Text style={styles.appName}>
             DiscoverView
           </Text>
@@ -60,7 +69,9 @@ export default class Home extends React.Component {
             style={this.searchButtonStyle}
             onPress={() => this.shortcutToNearbyPhotos()}
           >
-              <Text style={styles.searchButtonText}>Find Nearby Photos</Text>
+            <Text style={styles.searchButtonText}>
+              Find Nearby Photos
+            </Text>
           </TouchableOpacity>
 
         </Image>
@@ -121,7 +132,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Helvetica-Bold',
     fontSize: 20,
     textAlign: 'center',
-    color: '#157efb',
+    color: '#157efb'
   },
   background: {
     flex: 1,
