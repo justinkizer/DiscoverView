@@ -1,9 +1,8 @@
 # **DiscoverView**
 
-[DiscoverView] is a mobile application built on React Native which displays the most recent Instagram photos from a given location. A user can either view photos based on their current location, or drop a pin on a map and see the most recent photos near the pin.
+[DiscoverView](https://jastack.github.io/demo_page/) is a mobile application built on React Native which displays the most recent Instagram photos from a given location. A user can either view photos based on their current location, or drop a pin on a map and see the most recent photos near the pin.
 
 ![screenshots](docs/images/screenshots.png)
-[DiscoverView]: https://jastack.github.io/demo_page/
 
 ## Features
 
