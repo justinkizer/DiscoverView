@@ -18,11 +18,11 @@
 ## Technologies and Methodology
 
  - React Native
-  - This app was built entirely in React Native. Built by Facebook, React Native lets you build apps for both Android and iOS using only Javascript and the React framework.
+  ..- This app was built entirely in React Native. Created by Facebook, React Native lets you build apps for both Android and iOS using only Javascript and the React framework.
  - React Native Maps
-  - React Native Maps is a React component built by AirBnb. It gives the app map access.
+  ..- React Native Maps is a React component built by AirBnb. It gives the app map access.
  - Instagram API
-  - Each pin drop is one query to the Instagram API, which searches for the 100 most recent photos within 100 meters of the dropped pin.
+  ..- Each pin drop is one query to the Instagram API, which searches for the 100 most recent photos within 100 meters of the dropped pin.
 
 
 
