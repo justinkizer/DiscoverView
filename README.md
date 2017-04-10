@@ -1,61 +1,35 @@
 # **DiscoverView**
 
-A mobile application built on React Native which accesses the Instagram API to display public photos that were taken near the current location of the user. This will give users a general overview of popular places to visit in the area as well as potential inspiration for photos.
+[DiscoverView] is a mobile application built on React Native which displays the most recent Instagram photos from a given location. A user can either view photos based on their current location, or drop a pin on a map and see the most recent photos near the pin.
 
-## Minimum Viable Product and Functionality
+![screenshots](docs/images/screenshots.png)
+[DiscoverView]: https://jastack.github.io/demo_page/
 
- - Receives a user’s current location
- - Displays photos with location coordinates near user (ideally pulled from Instagram API)
- - Displays photo locations as pins on a google map (use google maps API here)
- - Built with React Native
- - Live demo web page
- - Live app-emulator web page
+## Features
 
-## Wireframes
+ - Displays user’s current location
+ - Displays photos with location coordinates near user
+ - A user can set pins anywhere and view photos from near that location
+ - Displays photo locations as pins on a map
+ - Save photos to camera roll
+ - View photos on Instagram
 
-![wireframes](docs/wireframes/Screens.png)
 
-## Technologies and Technical Challenges
+## Technologies and Methodology
 
-This app will be implemented using React Native, which will include Javascript, HTML, and CSS.
+ - React Native
+  - This app was built entirely in React Native. Built by Facebook, React Native lets you build apps for both Android and iOS using only Javascript and the React framework.
+ - React Native Maps
+  - React Native Maps is a React component built by AirBnb. It gives the app map access.
+ - Instagram API
+  - Each pin drop is one query to the Instagram API, which searches for the 100 most recent photos within 100 meters of the dropped pin.
 
-We will be dealing with primarily two external APIs -- Instagram and Google Maps. We will need to determine a user’s current location and pass those coordinates as a GET request from Instagram to GET all recent media from near that location. In order to use the Instagram API (even for finding public photos) a user will need to authenticate their Instagram account, so we will need to implement OAuth 2.0.
 
-If this proves too difficult or not practical, we will use alternative photo service APIs (Panoramio and Flickr) to fetch photos.
 
-## Group members and Work Breakdown
 
-We are a two person group -- Justin Kizer and James Stack.
+## Future Features
+The App is fully functional and useful as it now exists. However there are a few additional features we could add going forward.
 
-Justin’s primary responsibilities will be:
- - Researching and setting up React Native
- - Creating iOS/React Native screens
- - Implementing OAuth 2.0.
-
-James’ primary responsibilities will be:
- - Learning the Instagram API (or other photo service APIs if necessary)
- - Learning the GoogleMaps API
- - Creating a function to use coordinates from photos received on Instagram to drop pins on a Google Map
-
-## Implementation Timeline
-Day 1:
-
-- Justin: Begin React Native skeleton
-- James: Gain familiarity with Instagram API and determine if we’ll need additional photo site APIs
-
-Day 2:
-
-- Justin: Finish React Native skeleton
-- James: Get a handle on Google Maps API and how we can integrate it with Instagram API
-
-Day 3 and Day 4:
-
-- Justin: Ensure that the user has a current location
-- Justin: Create the Live Demo webpage
-- James: Ensure that photos display from near current location
-
-Day 5 and Day 6:
-
-- Justin: Style React Native App
-- James: Ensure photo locations can be displayed on a map
-- James: Create app-emulator web page
+- Add button to click on pin in maps and see photos directly associated with that pin.
+- Add option to save coordinates with photo when saving to phone, so a user can know where the picture was taken (if saved on phone).
+- Pull in photos from more sources than Instagram (google places, flickr)
