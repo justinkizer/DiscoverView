@@ -5,7 +5,9 @@ import {
   View,
   TouchableOpacity,
   Image,
-  Dimensions
+  Dimensions,
+  Alert,
+  Linking
 } from 'react-native';
 
 export default class Home extends React.Component {
@@ -29,8 +31,14 @@ export default class Home extends React.Component {
           longitude: longitude
         }
       });
-      }, error => alert(JSON.stringify(error)),
-      {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
+      }, error => Alert.alert('Location Access Required',
+        'To enable this feature, tap below to open Settings and Allow Location'
+          + ' Access.', [
+          {text: 'Location Settings', onPress: () =>
+            Linking.openURL('app-settings:')},
+          {text: 'Cancel', style: 'cancel'}
+        ]),
+        {enableHighAccuracy: true, maximumAge: 0}
     );
   }
 

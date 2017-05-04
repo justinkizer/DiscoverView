@@ -204,7 +204,22 @@ export default class Results extends React.Component {
         Linking.openURL(this.state.selectedPhotoPage);
       } else if (buttonPressed === 1) {
         CameraRoll.saveToCameraRoll(this.state.selectedPhoto)
-        .then(Alert.alert('Success', 'Photo saved to Camera Roll'));
+          .then(() =>
+            Alert.alert('Success', 'Photo saved to Camera Roll')
+          )
+          .catch(() =>
+            Alert.alert('Photos Access Required',
+              'To enable this feature, tap below to open Settings and Allow ' +
+              'Photos Access', [{
+                text: 'Photos Settings',
+                onPress: () => Linking.openURL('app-settings:')
+              },
+              {
+                text: 'Cancel',
+                style: 'cancel'
+              }
+            ])
+          );
       } else if (buttonPressed === 2) {
         this.goToMap();
       }

@@ -4,7 +4,9 @@ import {
   Image,
   TouchableOpacity,
   View,
-  Dimensions
+  Alert,
+  Dimensions,
+  Linking
 } from 'react-native';
 import MapView from 'react-native-maps';
 
@@ -64,8 +66,14 @@ export default class Map extends React.Component {
         longitudeDelta: 0.0094
       };
       this.setState({userLatitude: latitude, userLongitude: longitude});
-      }, error => alert(JSON.stringify(error)),
-      {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
+    }, error => Alert.alert('Location Access Required',
+      'To enable this feature, tap below to open Settings and Allow Location' +
+        ' Access.', [
+        {text: 'Location Settings', onPress: () =>
+          Linking.openURL('app-settings:')},
+        {text: 'Cancel', style: 'cancel'}
+      ]),
+      {enableHighAccuracy: true, maximumAge: 0}
     );
   }
 
