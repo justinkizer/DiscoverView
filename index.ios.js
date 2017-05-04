@@ -11,7 +11,9 @@ export default class DiscoverView extends React.Component {
       selectedTabButton: 'home',
       coordinates: {
         latitude: 37.805884,
-        longitude: -122.422869
+        longitude: -122.422869,
+        photoLatitude: 37.805884,
+        photoLongitude: -122.422869
       },
       userDroppedPin: null
     };

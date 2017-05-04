@@ -179,8 +179,10 @@ export default class Results extends React.Component {
     this.props.goToMap({
       selectedTabButton: 'map',
       coordinates: {
-        latitude: this.state.selectedPhotoCoords.latitude,
-        longitude: this.state.selectedPhotoCoords.longitude
+        latitude: this.state.latitude,
+        longitude: this.state.longitude,
+        photoLatitude: this.state.selectedPhotoCoords.latitude,
+        photoLongitude: this.state.selectedPhotoCoords.longitude
       },
       userDroppedPin: false
     });

@@ -14,6 +14,8 @@ export default class Map extends React.Component {
     this.state = {
       latitude: this.props.coordinates.latitude,
       longitude: this.props.coordinates.longitude,
+      photoLatitude: null,
+      photoLongitude: null,
       userLatitude: this.props.coordinates.latitude,
       userLongitude: this.props.coordinates.latitude,
       followingIcon: require('./assets/locationNotFollowing.png'),
@@ -38,9 +40,13 @@ export default class Map extends React.Component {
     });
     this.snapCoordinates = null;
     if (!newProps.userDroppedPin) {
+      this.setState({
+        photoLatitude: newProps.coordinates.photoLatitude,
+        photoLongitude: newProps.coordinates.photoLongitude
+      });
       this.snapCoordinates = {
-        latitude: newProps.coordinates.latitude,
-        longitude: newProps.coordinates.longitude,
+        latitude: newProps.coordinates.photoLatitude,
+        longitude: newProps.coordinates.photoLongitude,
         latitudeDelta: 0.0093,
         longitudeDelta: 0.0094
       };
@@ -99,6 +105,17 @@ export default class Map extends React.Component {
   }
 
   render() {
+    let photoPin = null;
+    if (this.state.photoLatitude) {
+      photoPin =
+      <MapView.Marker
+        draggable={false}
+        coordinate={{
+          latitude: this.state.photoLatitude,
+          longitude: this.state.photoLongitude
+        }}
+      />;
+    }
     return (
       <View
         style={styles.mapContainer}
@@ -111,6 +128,7 @@ export default class Map extends React.Component {
           onPress={pin => this.handleMapPress(pin.nativeEvent.coordinate)}
         >
           <MapView.Marker
+            pinColor={'blue'}
             draggable={true}
             onDragEnd={pin => this.handleMapPress(pin.nativeEvent.coordinate)}
             coordinate={{
@@ -118,6 +136,16 @@ export default class Map extends React.Component {
               longitude: this.state.longitude
             }}
           />
+          <MapView.Circle
+            center={{
+              latitude: this.state.latitude,
+              longitude: this.state.longitude
+            }}
+            radius={600}
+            fillColor={'rgba(66,134,244,0.2)'}
+            strokeColor={'rgba(255,255,255,0)'}
+          />
+          {photoPin}
         </MapView>
 
         <TouchableOpacity
