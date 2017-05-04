@@ -12,8 +12,7 @@ export default class Home extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentOrientation: Dimensions.get('window').width <
-        Dimensions.get('window').height ? 'landscape' : 'portrait'
+      currentOrientation: 'unknown'
     };
     this.changeOrientation = this.changeOrientation.bind(this);
   }
@@ -36,14 +35,14 @@ export default class Home extends React.Component {
   }
 
   changeOrientation() {
-    if (this.state.currentOrientation === 'portrait') {
-      this.searchButtonStyle = styles.searchButtonLandscape;
-      this.backgroundImage = require('./assets/landscapeBackground.png');
-      this.setState({currentOrientation: 'landscape'});
-    } else {
+    if (Dimensions.get('window').width < Dimensions.get('window').height) {
       this.searchButtonStyle = styles.searchButtonPortrait;
       this.backgroundImage = require('./assets/background.png');
       this.setState({currentOrientation: 'portrait'});
+    } else {
+      this.searchButtonStyle = styles.searchButtonLandscape;
+      this.backgroundImage = require('./assets/landscapeBackground.png');
+      this.setState({currentOrientation: 'landscape'});
     }
   }
 
@@ -80,6 +79,14 @@ export default class Home extends React.Component {
   }
 }
 
+let smallerDimension = Dimensions.get('window').width <
+  Dimensions.get('window').height ? Dimensions.get('window').width :
+  Dimensions.get('window').height;
+
+let largerDimension = Dimensions.get('window').width >
+  Dimensions.get('window').height ? Dimensions.get('window').width :
+  Dimensions.get('window').height;
+
 const styles = StyleSheet.create({
   homeContainer: {
     flex: 1,
@@ -89,7 +96,7 @@ const styles = StyleSheet.create({
   },
   appName: {
     top: '15%',
-    fontSize: 40,
+    fontSize: smallerDimension / 10,
     fontFamily: 'Helvetica-Bold',
     color: 'white',
     textShadowColor: 'gray',
@@ -100,7 +107,7 @@ const styles = StyleSheet.create({
   appNameTagLine: {
     top: '17%',
     fontFamily: 'Helvetica-Bold',
-    fontSize: 20,
+    fontSize: smallerDimension / 20,
     textAlign: 'center',
     color: 'white',
     left: '0.125%',
@@ -110,27 +117,27 @@ const styles = StyleSheet.create({
   },
   searchButtonPortrait: {
     top: '22%',
-    left: '22%',
-    width: '57%',
+    left: '25%',
+    width: '48%',
     backgroundColor: 'white',
-    borderWidth: 6,
+    borderWidth: 7,
     borderColor: 'white',
     borderRadius: 30,
     zIndex: 1
   },
   searchButtonLandscape: {
     top: '22%',
-    left: '34%',
-    width: '32%',
+    left: (largerDimension / 2) - ((smallerDimension / 2.1) / 1.95),
+    width: smallerDimension / 2.1,
     backgroundColor: 'white',
-    borderWidth: 6,
+    borderWidth: 7,
     borderColor: 'white',
     borderRadius: 30,
     zIndex: 1
   },
   searchButtonText: {
     fontFamily: 'Helvetica-Bold',
-    fontSize: 20,
+    fontSize: smallerDimension / 24,
     textAlign: 'center',
     color: '#157efb'
   },

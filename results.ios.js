@@ -236,7 +236,7 @@ export default class Results extends React.Component {
         onLayout={this.changeOrientation}
       >
         <ListView
-          initialListSize={18}
+          initialListSize={40}
           enableEmptySections={true}
           dataSource={this.state.dataSource}
           renderRow={this.renderPhoto}
@@ -252,16 +252,6 @@ export default class Results extends React.Component {
           onOrientationChange={this.changeOrientation}
         >
           <View>
-            <TouchableOpacity
-              style={this.showOnMapButtonLocation}
-              onPress={this.goToMap}
-              hitSlop={{top: 10, left: 15, bottom: 15, right: 15}}
-            >
-              <Text style={styles.showOnMapText}>
-                Show on Map
-              </Text>
-            </TouchableOpacity>
-
             <View {...this.panResponder.panHandlers}>
               <TouchableHighlight
                 onPress={() => this.modalVisible(false)}
@@ -275,7 +265,17 @@ export default class Results extends React.Component {
                   <Image
                     style={this.photoFullLocation}
                     source={{uri: this.state.selectedPhoto}}
-                  />
+                  >
+                    <TouchableOpacity
+                      style={this.showOnMapButtonLocation}
+                      onPress={this.goToMap}
+                      hitSlop={{top: 10, left: 15, bottom: 15, right: 15}}
+                    >
+                      <Text style={styles.showOnMapText}>
+                        Show on Map
+                      </Text>
+                    </TouchableOpacity>
+                  </Image>
                 </View>
               </TouchableHighlight>
             </View>
@@ -335,10 +335,14 @@ export default class Results extends React.Component {
   }
 }
 
+let dimensions = Dimensions.get('window').width <
+  Dimensions.get('window').height ? Dimensions.get('window').width :
+  Dimensions.get('window').height;
+
 const styles = StyleSheet.create({
   photoBox: {
-    width: 100,
-    height: 100,
+    width: dimensions / 4.4,
+    height: dimensions / 4.4,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#fafafa',
@@ -364,7 +368,7 @@ const styles = StyleSheet.create({
     top: '50%',
     width: '50%',
     fontFamily: 'Helvetica-light',
-    fontSize: 16,
+    fontSize: dimensions / 24,
     textAlign: 'center',
     color: 'gray'
   },
@@ -372,31 +376,40 @@ const styles = StyleSheet.create({
     top: '25%',
     width: '50%',
     fontFamily: 'Helvetica-light',
-    fontSize: 16,
+    fontSize: dimensions / 24,
     textAlign: 'center',
     color: 'gray'
   },
   showOnMapButtonPortrait: {
-    top: '81%',
-    left: '71.5%',
-    width: '27%',
+    position: 'absolute',
+    top: (Dimensions.get('window').height / 2) +
+      (Dimensions.get('window').width / 2) +
+      (Dimensions.get('window').height * 0.01),
+    right: -5,
+    width: '31%',
     zIndex: 1
   },
   showOnMapButtonLandscape: {
-    top: '89%',
-    left: '75.5%',
+    position: 'absolute',
+    top: '92%',
+    right: `-${(Dimensions.get('window').width / 2 +
+      Dimensions.get('window').height / 2 - Dimensions.get('window').width) *
+      0.012}%`,
     width: '25%',
     zIndex: 1
   },
   showOnMapText: {
     fontFamily: 'Helvetica-light',
-    fontSize: 16,
+    fontSize: dimensions * 0.04,
     textAlign: 'center',
-    color: 'gray'
+    color: 'gray',
+    textShadowColor: 'white',
+    textShadowOffset: {width: 1, height: 1},
+    textShadowRadius: 1
   },
   photo: {
-    width: 100,
-    height: 100,
+    width: dimensions / 4.4,
+    height: dimensions / 4.4,
     borderColor: 'rgba(0,0,0,.09)',
     borderWidth: 1,
     borderRadius: 3,
@@ -412,7 +425,6 @@ const styles = StyleSheet.create({
   photoFullLandscape: {
     width: '100%',
     height: '100%',
-    top: '-5%',
     resizeMode: 'contain'
   },
   container: {
